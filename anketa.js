@@ -128,7 +128,8 @@ export const anketaListiner = async() => {
           }
           if (card.hasOwnProperty("Card")) {
             cardCard = card.cardId;
-          } 
+          }
+          
       }
   
       switch (msg.text) {
@@ -150,11 +151,10 @@ export const anketaListiner = async() => {
           }
         break;
 
-
         case 'Повернутися до головного меню':
         case 'До головного меню':
           await updateUserByChatId(chatId, { dialoguestatus: '' });
-          if (isAuthenticated) {
+          if (msg.chat.id) {
             bot.sendMessage(msg.chat.id, phrases.mainMenu, {
               reply_markup: { keyboard: keyboards.mainMenu, resize_keyboard: true, one_time_keyboard: true }
             });  
@@ -165,60 +165,6 @@ export const anketaListiner = async() => {
             });  
           }
         break;
-
-        case 'Зареєструватись':
-        case '/register':
-          if(userInfo) {
-            bot.sendMessage(chatId, `Ви вже зареєстровані, будь ласка, авторизуйтесь`,{
-              reply_markup: { keyboard: keyboards.login, resize_keyboard: true, one_time_keyboard: true }
-            });
-          } else {
-            
-            await createNewUserByChatId(chatId);
-            bot.sendMessage(msg.chat.id, phrases.contactRequest, {
-              reply_markup: { keyboard: keyboards.contactRequest, resize_keyboard: true, one_time_keyboard: true }
-            });  
-          }
-          break;
-
-        case 'Мій профіль':
-
-        const cardId = apiData?.cards;
-
-        const card = await getCardData(userDatafromApi, cardId)
-
-        console.log(card)
-
-          await updateCardById( cardId,
-            {
-              WaterQty: card.WaterQty,
-              AllQty: card.AllQty,
-              MoneyPerMonth: card.MoneyPerMonth,
-              LitersPerDay: card.LitersPerDay,
-              Discount:  card.Discount,
-            }
-          )
-          
-          const nextLevel = (discount, turnover) => {
-            if (discount == 20) {
-              return 1000 - turnover;
-            } else if (discount == 25) {
-              return 2000 - turnover;
-            } else {
-              return 'максимальна знижка';
-            }
-          }
-          
-          const bonusBalace = await findBalanceByChatId(chatId);
-          
-          const balanceMessage = `
-баланс: бла бла
-          `
-          bot.sendMessage(msg.chat.id, balanceMessage, {
-            reply_markup: { keyboard: keyboards.mainMenuButton, resize_keyboard: true, one_time_keyboard: true }
-          });
-          break;
-
 
         case 'Служба підтримки': 
           bot.sendMessage(msg.chat.id, 'Шановні клієнти, служба підтримки працює за графіком: Пн-Пт з 8:00 до 22:00, Сб-Нд з 9:00 до 20:00', {
